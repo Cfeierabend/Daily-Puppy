@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Puppy</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      max-width: 420px;
+      width: 100%;
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 22px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+    .puppy {
+      font-size: 80px;
+      margin: 14px 0;
+    }
+    .status {
+      font-size: 15px;
+      margin-bottom: 14px;
+      opacity: 0.85;
+    }
+    button {
+      background: #1d4ed8;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #334155;
+      cursor: default;
+    }
+    .note {
+      font-size: 12px;
+      margin-top: 14px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Daily Check-In</h1>
+    <div class="puppy">🐶</div>
+    <div class="status" id="status"></div>
+    <button id="feedBtn">Feed Pixel 🦴</button>
+    <div class="note" id="note"></div>
+  </div>
+
+  <script>
+    const puppyName = "Pixel";
+
+    const todayKey = new Date().toDateString();
+    const fedKey = "fed_" + todayKey;
+
+    const statusEl = document.getElementById("status");
+    const feedBtn = document.getElementById("feedBtn");
+    const noteEl = document.getElementById("note");
+
+    function render() {
+      if (localStorage.getItem(fedKey)) {
+        statusEl.textContent = `${puppyName} is full and happy.`;
+        feedBtn.disabled = true;
+        noteEl.textContent = "He’s glad you stopped by today.";
+      } else {
+        statusEl.textContent = `${puppyName} is waiting for you.`;
+        noteEl.textContent = "";
+      }
+    }
+
+    feedBtn.addEventListener("click", () => {
+      localStorage.setItem(fedKey, "yes");
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
