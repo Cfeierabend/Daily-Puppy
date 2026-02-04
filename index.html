@@ -436,25 +436,33 @@
       log.special = true;
       setDayLog(d, log);
 
-      if(special.type === "play"){
-        ping(spotEl, "🐶🎾");
-        statusEl.textContent = "Spot zoomed.";
+      if (special.type === "play") {
+  log.specialMsg = "Spot zoomed. Your house is now a racetrack.";
+  log.specialEmoji = "🐶🎾";
+}
       }
-      if(special.type === "upgrade"){
-        state.home = Math.min(3, state.home + 1);
-        saveJSON(KEY_STATE, state);
-        ping(spotEl, "🏠✨");
-        statusEl.textContent = "Upgrade installed. Spot has standards now.";
+     if (special.type === "upgrade") {
+  state.home = Math.min(3, state.home + 1);
+  saveJSON(KEY_STATE, state);
+
+  log.specialMsg = "Upgrade installed. Spot has standards now.";
+  log.specialEmoji = "🏠✨";
+}
+    
       }
-      if(special.type === "friend"){
-        const pick = FRIENDS[Math.floor(Math.random()*FRIENDS.length)];
-        state.friendType = pick.type;
-        state.friendEmoji = pick.emoji;
-        saveJSON(KEY_STATE, state);
-        friendEl.style.display = "block";
-        ping(friendEl, pick.emoji);
-        ping(spotEl, "🐶✨");
-        statusEl.textContent = `New friend unlocked: ${pick.type}.`;
+      if (special.type === "friend") {
+  const pick = FRIENDS[Math.floor(Math.random()*FRIENDS.length)];
+  state.friendType = pick.type;
+  state.friendEmoji = pick.emoji;
+  saveJSON(KEY_STATE, state);
+
+  log.specialMsg = `New friend unlocked: ${pick.type}.`;
+  log.specialEmoji = pick.emoji;
+}
+ // 🔥 THIS IS THE KEY
+  setDayLog(d, log);
+  render();
+};
       }
       render();
     };
