@@ -3,20 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tomo — Daily Check-In</title>
+  <title>Spot — Daily Check-In</title>
   <style>
     :root{
       --bg0:#050814;
       --bg1:#07142f;
-      --bg2:#0a2450;
       --card: rgba(9, 14, 28, 0.70);
       --border: rgba(255,255,255,0.12);
       --text:#eaf1ff;
       --muted:#a9b9df;
+
+      /* Theme colors (will shift with upgrades) */
       --accent:#8b5cf6;
-      --accent2:#22c55e;
-      --warn:#f59e0b;
-      --danger:#ef4444;
+      --accentB:#3b82f6;
+      --accentG:#22c55e;
+
       --shadow: 0 28px 80px rgba(0,0,0,.55);
       --radius: 26px;
     }
@@ -33,13 +34,14 @@
       place-items:center;
       padding: 26px;
       overflow:hidden;
-      background: radial-gradient(1200px 700px at 18% 12%, rgba(139,92,246,.25), transparent 55%),
-                  radial-gradient(900px 600px at 84% 18%, rgba(34,197,94,.14), transparent 55%),
-                  radial-gradient(900px 700px at 50% 90%, rgba(59,130,246,.14), transparent 60%),
-                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      background:
+        radial-gradient(1200px 700px at 18% 12%, rgba(139,92,246,.25), transparent 55%),
+        radial-gradient(900px 600px at 84% 18%, rgba(34,197,94,.14), transparent 55%),
+        radial-gradient(900px 700px at 50% 90%, rgba(59,130,246,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
     }
 
-    /* soft animated gradient “aurora” layers */
+    /* soft animated gradient “aurora” */
     .aurora{
       position:fixed;
       inset:-40%;
@@ -47,7 +49,7 @@
         radial-gradient(circle at 20% 30%, rgba(139,92,246,.35), transparent 55%),
         radial-gradient(circle at 70% 40%, rgba(59,130,246,.25), transparent 55%),
         radial-gradient(circle at 50% 75%, rgba(34,197,94,.18), transparent 60%);
-      filter: blur(40px);
+      filter: blur(44px);
       opacity: .8;
       animation: drift 14s ease-in-out infinite alternate;
       pointer-events:none;
@@ -69,7 +71,7 @@
       mix-blend-mode: overlay;
     }
 
-    .wrap{ width:min(560px, 100%); position:relative; z-index:1; }
+    .wrap{ width:min(580px, 100%); position:relative; z-index:1; }
 
     .card{
       background: var(--card);
@@ -80,9 +82,10 @@
       backdrop-filter: blur(14px);
       position:relative;
       overflow:hidden;
+      transition: border-color .35s ease, box-shadow .35s ease;
     }
 
-    /* glowing border sweep */
+    /* glowing border sweep (base) */
     .card:after{
       content:"";
       position:absolute;
@@ -90,12 +93,20 @@
       border-radius: var(--radius);
       pointer-events:none;
       background:
-        radial-gradient(700px 220px at 10% 0%, rgba(139,92,246,.30), transparent 60%),
-        radial-gradient(600px 200px at 95% 10%, rgba(34,197,94,.22), transparent 60%);
-      opacity:.8;
-      filter: blur(10px);
+        radial-gradient(720px 240px at 10% 0%, rgba(139,92,246,.30), transparent 60%),
+        radial-gradient(620px 220px at 95% 10%, rgba(34,197,94,.22), transparent 60%);
+      opacity:.85;
+      filter: blur(12px);
+      transition: opacity .35s ease;
     }
     .card > *{ position:relative; z-index:1; }
+
+    /* House-level themes (upgrade changes the card vibe) */
+    .home-0{ border-color: rgba(255,255,255,0.12); }
+    .home-1{ border-color: rgba(59,130,246,0.35); box-shadow: 0 28px 90px rgba(59,130,246,.10), var(--shadow); }
+    .home-2{ border-color: rgba(34,197,94,0.35); box-shadow: 0 28px 90px rgba(34,197,94,.10), var(--shadow); }
+    .home-3{ border-color: rgba(139,92,246,0.45); box-shadow: 0 28px 110px rgba(139,92,246,.14), var(--shadow); }
+    .home-3:after{ opacity: 1; }
 
     .top{
       display:flex;
@@ -139,7 +150,14 @@
 
     .center{ text-align:center; padding: 14px 10px 6px; }
 
-    /* emoji float + “idle wiggle” */
+    /* emoji float + idle wiggle */
+    .emojiRow{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:14px;
+      min-height: 96px;
+    }
     .emoji{
       font-size: 80px;
       line-height: 1;
@@ -148,6 +166,11 @@
       animation: floaty 4.2s ease-in-out infinite;
       transform: translateZ(0);
       user-select:none;
+    }
+    .emoji.small{
+      font-size: 64px;
+      opacity: .95;
+      animation-duration: 5.1s;
     }
     @keyframes floaty{
       0%,100%{ transform: translateY(0) rotate(0deg); }
@@ -201,4 +224,581 @@
       content:"";
       position:absolute;
       inset:-40%;
-      background: radial-gradie
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 50%);
+      transform: translateX(-35%) rotate(12deg);
+      transition: transform .35s ease;
+      opacity:.8;
+    }
+    button:hover{
+      filter: brightness(1.06);
+      box-shadow: 0 18px 46px rgba(139,92,246,.26);
+    }
+    button:hover:before{ transform: translateX(0%) rotate(12deg); }
+    button:active{ transform: translateY(1px) scale(.99); }
+    button:disabled{
+      opacity:.55;
+      cursor:default;
+      filter:none;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .secondary{
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--muted);
+      box-shadow:none;
+    }
+    .danger{
+      background: linear-gradient(135deg, rgba(239,68,68,.92), rgba(245,158,11,.55));
+      box-shadow: 0 16px 34px rgba(239,68,68,.18);
+    }
+
+    .panel{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      text-align:left;
+    }
+    .panel h3{
+      margin:0 0 8px;
+      font-size: 13px;
+      letter-spacing:.02em;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .panel .line{ margin: 6px 0; font-size: 13px; color: var(--text); opacity:.92; }
+    .panel .small{ font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    .footer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      font-size: 12px;
+      flex-wrap:wrap;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .finale{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,.18);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .finale .muted{ color: var(--muted); font-size: 12px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="card home-0" id="card">
+      <div class="top">
+        <div>
+          <h1 class="title">Daily Check-In</h1>
+          <div class="sub" id="subtitle">Initializing Spot…</div>
+          <div class="progress" aria-label="progress">
+            <div class="bar" id="bar"></div>
+          </div>
+        </div>
+        <div class="pill" id="dayPill">Day — / 7</div>
+      </div>
+
+      <div class="center">
+        <div class="emojiRow">
+          <div class="emoji" id="emoji">🐶</div>
+          <div class="emoji small" id="friendEmoji" style="display:none;">🐶</div>
+        </div>
+
+        <div class="status" id="status">Loading…</div>
+        <div class="mood" id="mood"></div>
+
+        <div class="actions" id="actions"></div>
+
+        <div class="panel" id="panel">
+          <h3>Today’s Situation</h3>
+          <div class="line" id="situationLine">—</div>
+          <div class="small" id="hintLine">—</div>
+        </div>
+
+        <div class="finale" id="finale" style="display:none;"></div>
+      </div>
+
+      <div class="footer">
+        <div class="tag" id="homeTag">🏠 Home: Starter</div>
+        <div class="tag" id="toyTag">🧸 Toys: 0</div>
+        <div class="tag" id="friendTag">👥 Friend: None</div>
+        <div class="tag" id="streakTag">🗓️ Streak: 0</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =======================
+    // SPOT v2 — 7 day mini-sim
+    // =======================
+
+    const NAME = "Spot";
+    const TOTAL_DAYS = 7;
+
+    // Cutoff time = NOON (12:00). After noon: if not fed -> shoe incident.
+    const LATE_CUTOFF_HOUR = 12;
+
+    // Storage keys
+    const KEY_START = "spot_start_date_v2";
+    const KEY_STATE = "spot_state_v2"; // JSON
+    const KEY_DAYLOG = (dayIndex) => `spot_day_${dayIndex}_v2`; // JSON per day
+
+    // Elements
+    const cardEl = document.getElementById("card");
+    const subtitleEl = document.getElementById("subtitle");
+    const dayPillEl = document.getElementById("dayPill");
+    const barEl = document.getElementById("bar");
+    const emojiEl = document.getElementById("emoji");
+    const friendEmojiEl = document.getElementById("friendEmoji");
+    const statusEl = document.getElementById("status");
+    const moodEl = document.getElementById("mood");
+    const actionsEl = document.getElementById("actions");
+    const panelSituationEl = document.getElementById("situationLine");
+    const panelHintEl = document.getElementById("hintLine");
+    const homeTagEl = document.getElementById("homeTag");
+    const toyTagEl = document.getElementById("toyTag");
+    const friendTagEl = document.getElementById("friendTag");
+    const streakTagEl = document.getElementById("streakTag");
+    const finaleEl = document.getElementById("finale");
+
+    // Helpers
+    function midnight(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+    function daysBetween(a, b){
+      const ms = 24*60*60*1000;
+      return Math.floor((midnight(b)-midnight(a))/ms);
+    }
+    function loadJSON(key, fallback){
+      try{
+        const raw = localStorage.getItem(key);
+        if(!raw) return fallback;
+        return JSON.parse(raw);
+      }catch{ return fallback; }
+    }
+    function saveJSON(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
+    function pingEmoji(el, char){
+      el.textContent = char;
+      el.classList.remove("ping");
+      void el.offsetWidth;
+      el.classList.add("ping");
+    }
+
+    function initStartDate(){
+      let raw = localStorage.getItem(KEY_START);
+      if(!raw){
+        raw = new Date().toISOString();
+        localStorage.setItem(KEY_START, raw);
+      }
+      return new Date(raw);
+    }
+
+    function initState(){
+      const existing = loadJSON(KEY_STATE, null);
+      if(existing) return existing;
+
+      const state = {
+        homeLevel: 0,      // 0..3
+        toys: 0,
+        friendType: "None", // None | Calm | Chaos | Mysterious
+        friendEmoji: null,  // visual “different color puppy”
+        streak: 0,
+        lastFedDay: null,
+        ended: false
+      };
+      saveJSON(KEY_STATE, state);
+      return state;
+    }
+
+    function getDayIndex(start){ return daysBetween(start, new Date()); }
+    function clampDay(i){ return Math.max(0, Math.min(TOTAL_DAYS-1, i)); }
+
+    const HOME_NAMES = ["Starter", "Better Box", "Cozy Setup", "Chaos Mansion"];
+
+    // friend “colors” (we fake it with different dog-like emojis)
+    const FRIEND_VARIANTS = [
+      { type:"Calm",       emoji:"🐶🤎" },
+      { type:"Chaos",      emoji:"🐶🖤" },
+      { type:"Mysterious", emoji:"🐶🩶" }
+    ];
+
+    // One special action per day besides Feed
+    const SPECIALS = [
+      { type:"play",   label:"Play with Spot 🎾",        situation:"Spot has excess energy and questionable intentions.", hint:"Play usually helps. Usually." },
+      { type:"upgrade",label:"Upgrade Spot’s house 🏠",  situation:"The current living conditions are… technically legal.", hint:"Upgrades shift the vibe (and the card theme)." },
+      { type:"toy",    label:"Buy Spot a toy 🧸",        situation:"Spot is staring at the toy aisle in your mind.", hint:"Toys can calm Spot or unlock chaos. Flip a coin." },
+      { type:"friend", label:"Get Spot a friend 👥",     situation:"Spot is lonely. Or plotting. Hard to tell.", hint:"A new puppy appears. Different ‘color.’ Same menace." },
+      { type:"quiz",   label:"Answer today’s TRICK question 🧠", situation:"A question appears. It is not here to be fair.", hint:"Correct answers are a myth. Responses are guaranteed." },
+      { type:"upgrade",label:"Upgrade something again 🔧",situation:"You feel… responsible now.", hint:"This is how it starts." },
+      { type:"play",   label:"One last play session 🎾",  situation:"Final day energy. Spot is watching closely.", hint:"No pressure. Only consequences." }
+    ];
+
+    const TRICK_Q = {
+      q: "Choose the correct answer:",
+      a: [
+        { text: "A) This one.", result: "Incorrect. Confidently.", emoji:"🐶😈" },
+        { text: "B) That one.", result: "Also incorrect. Elegantly.", emoji:"🐶😌" },
+        { text: "C) The third option.", result: "Incorrect, but with good vibes.", emoji:"🐶✨" }
+      ],
+      after: "Spot judges your logic. Quietly."
+    };
+
+    function getDayLog(dayIndex){
+      return loadJSON(KEY_DAYLOG(dayIndex), {
+        fed:false,
+        specialDone:false,
+        fedAt:null,
+        specialType:null,
+        shoeChewed:false,
+        note:null
+      });
+    }
+    function saveDayLog(dayIndex, log){ saveJSON(KEY_DAYLOG(dayIndex), log); }
+
+    function progressPercent(dayIndex, ended){
+      if(ended) return 99;
+      const base = Math.round(((dayIndex) / (TOTAL_DAYS-1)) * 80);
+      return Math.min(95, 10 + base);
+    }
+
+    function computeSubtitle(dayIndex){
+      const hh = new Date().getHours();
+      if(dayIndex === 0) return "Welcome. Spot is evaluating you.";
+      if(hh >= LATE_CUTOFF_HOUR) return "It’s past noon. Spot noticed.";
+      return "Proceed with calm confidence.";
+    }
+
+    function applyHouseTheme(homeLevel){
+      cardEl.classList.remove("home-0","home-1","home-2","home-3");
+      cardEl.classList.add(`home-${homeLevel}`);
+    }
+
+    function renderFriend(state){
+      if(state.friendType === "None" || !state.friendEmoji){
+        friendEmojiEl.style.display = "none";
+        return;
+      }
+      friendEmojiEl.style.display = "block";
+      friendEmojiEl.textContent = state.friendEmoji;
+    }
+
+    function render(){
+      const start = initStartDate();
+      const state = initState();
+      const rawDay = getDayIndex(start);
+
+      // Freeze forever after day 7
+      if(rawDay >= TOTAL_DAYS){
+        state.ended = true;
+        saveJSON(KEY_STATE, state);
+        renderFinale(state);
+        return;
+      }
+
+      const dayIndex = clampDay(rawDay);
+      const dayNum = dayIndex + 1;
+      const log = getDayLog(dayIndex);
+
+      applyHouseTheme(state.homeLevel);
+      renderFriend(state);
+
+      subtitleEl.textContent = computeSubtitle(dayIndex);
+      dayPillEl.textContent = `Day ${dayNum} / ${TOTAL_DAYS}`;
+
+      const endedToday = (dayIndex === TOTAL_DAYS-1) && log.fed && log.specialDone;
+      barEl.style.width = `${progressPercent(dayIndex, endedToday)}%`;
+
+      homeTagEl.textContent = `🏠 Home: ${HOME_NAMES[state.homeLevel]}`;
+      toyTagEl.textContent = `🧸 Toys: ${state.toys}`;
+      friendTagEl.textContent = `👥 Friend: ${state.friendType}`;
+      streakTagEl.textContent = `🗓️ Streak: ${state.streak}`;
+
+      const now = new Date();
+      const hh = now.getHours();
+      const pastNoon = hh >= LATE_CUTOFF_HOUR;
+
+      const special = SPECIALS[dayIndex];
+
+      // ---- Shoe chewing logic (if not fed by noon) ----
+      if(!log.fed && pastNoon && !log.shoeChewed){
+        log.shoeChewed = true;
+        log.note = "Spot chewed a shoe due to lack of timely snacks.";
+        saveDayLog(dayIndex, log);
+      }
+
+      // Status/mood logic
+      if(!log.fed){
+        if(pastNoon){
+          statusEl.textContent = `${NAME} is mad. He chewed a shoe.`;
+          moodEl.textContent = "This is a predictable consequence. Also, it’s personal.";
+          pingEmoji(emojiEl, "🐶👞");
+        } else {
+          statusEl.textContent = `${NAME} is waiting.`;
+          moodEl.textContent = "He is currently choosing peace.";
+          pingEmoji(emojiEl, "🐶");
+        }
+      } else {
+        statusEl.textContent = `${NAME} is full and alert.`;
+        moodEl.textContent = log.specialDone
+          ? "Daily inputs received. Stability: questionable."
+          : "Fed. Still capable of chaos. Choose wisely.";
+        pingEmoji(emojiEl, "🐶✨");
+      }
+
+      panelSituationEl.textContent = special.situation;
+      panelHintEl.textContent = special.hint;
+
+      // Buttons
+      actionsEl.innerHTML = "";
+
+      // Feed always
+      const feedBtn = document.createElement("button");
+      feedBtn.textContent = `Feed ${NAME} 🦴`;
+      feedBtn.disabled = log.fed;
+      feedBtn.addEventListener("click", () => doFeed(dayIndex));
+      actionsEl.appendChild(feedBtn);
+
+      // Special action
+      const specBtn = document.createElement("button");
+      specBtn.className = "secondary";
+      specBtn.textContent = special.label;
+      specBtn.disabled = log.specialDone;
+      specBtn.addEventListener("click", () => doSpecial(dayIndex, special.type));
+      actionsEl.appendChild(specBtn);
+
+      // Dev restart
+      const restartBtn = document.createElement("button");
+      restartBtn.className = "danger";
+      restartBtn.textContent = "Restart 7 days (dev)";
+      restartBtn.addEventListener("click", () => restartAll());
+      actionsEl.appendChild(restartBtn);
+
+      // Finale on completion of day 7 tasks
+      if(endedToday){
+        renderFinale(state);
+      } else {
+        finaleEl.style.display = "none";
+      }
+    }
+
+    function doFeed(dayIndex){
+      const state = initState();
+      const log = getDayLog(dayIndex);
+
+      const now = new Date();
+      const isLate = now.getHours() >= LATE_CUTOFF_HOUR;
+
+      log.fed = true;
+      log.fedAt = now.toISOString();
+
+      // streak logic
+      if(state.lastFedDay === null || state.lastFedDay === dayIndex-1){
+        state.streak += 1;
+      } else if(state.lastFedDay !== dayIndex){
+        state.streak = 1;
+      }
+      state.lastFedDay = dayIndex;
+
+      if(isLate){
+        log.note = `${NAME} was fed late. He will remember this.`;
+        statusEl.textContent = `${NAME} ate. He’s still judging you.`;
+        pingEmoji(emojiEl, "🐶😑");
+      } else {
+        log.note = `${NAME} received the daily tribute.`;
+        statusEl.textContent = `${NAME} is full and happy-ish.`;
+        pingEmoji(emojiEl, "🐶✨");
+      }
+
+      saveDayLog(dayIndex, log);
+      saveJSON(KEY_STATE, state);
+
+      render();
+    }
+
+    function doSpecial(dayIndex, type){
+      const state = initState();
+      const log = getDayLog(dayIndex);
+
+      log.specialDone = true;
+      log.specialType = type;
+
+      if(type === "play"){
+        log.note = `${NAME} played. Outcome: joy + minor chaos.`;
+        pingEmoji(emojiEl, "🐶🎾");
+        statusEl.textContent = `${NAME} did a happy spin.`;
+      }
+      else if(type === "upgrade"){
+        state.homeLevel = Math.min(3, state.homeLevel + 1);
+        log.note = `Living conditions improved. Card theme updated.`;
+        pingEmoji(emojiEl, "🏠✨");
+        statusEl.textContent = `${NAME} inspected the upgrade.`;
+      }
+      else if(type === "toy"){
+        state.toys += 1;
+        const roll = Math.random();
+        if(roll < 0.35){
+          log.note = `Toy acquired. ${NAME} is calm. Suspiciously.`;
+          pingEmoji(emojiEl, "🧸😌");
+          statusEl.textContent = `${NAME} loves the toy.`;
+        } else {
+          log.note = `Toy acquired. ${NAME} used it to invent a new problem.`;
+          pingEmoji(emojiEl, "🧸😈");
+          statusEl.textContent = `${NAME} is “busy.”`;
+        }
+      }
+      else if(type === "friend"){
+        const pick = FRIEND_VARIANTS[Math.floor(Math.random()*FRIEND_VARIANTS.length)];
+        state.friendType = pick.type;
+        state.friendEmoji = pick.emoji;
+        log.note = `A new puppy appeared: ${pick.type}.`;
+        // show friend immediately
+        pingEmoji(friendEmojiEl, pick.emoji);
+        friendEmojiEl.style.display = "block";
+        pingEmoji(emojiEl, "🐶✨");
+        statusEl.textContent = `${NAME} now has a friend: ${pick.type}.`;
+      }
+      else if(type === "quiz"){
+        runTrickQuiz(dayIndex);
+        return;
+      }
+
+      saveDayLog(dayIndex, log);
+      saveJSON(KEY_STATE, state);
+
+      render();
+    }
+
+    function runTrickQuiz(dayIndex){
+      const state = initState();
+      const log = getDayLog(dayIndex);
+
+      panelSituationEl.textContent = TRICK_Q.q;
+      panelHintEl.textContent = "Pick one. Any one. They are all wrong in different ways.";
+
+      actionsEl.innerHTML = "";
+
+      // Keep Feed always visible
+      const feedBtn = document.createElement("button");
+      feedBtn.textContent = `Feed ${NAME} 🦴`;
+      feedBtn.disabled = log.fed;
+      feedBtn.addEventListener("click", () => doFeed(dayIndex));
+      actionsEl.appendChild(feedBtn);
+
+      TRICK_Q.a.forEach((opt) => {
+        const b = document.createElement("button");
+        b.className = "secondary";
+        b.textContent = opt.text;
+        b.addEventListener("click", () => {
+          log.specialDone = true;
+          log.specialType = "quiz";
+          log.note = `${opt.result} ${TRICK_Q.after}`;
+
+          // Chaotic-neutral bonus anyway
+          const roll = Math.random();
+          if(roll < 0.25){
+            state.homeLevel = Math.min(3, state.homeLevel + 1);
+            log.note += " Bonus: accidental house upgrade unlocked.";
+          } else if(roll < 0.50){
+            state.toys += 1;
+            log.note += " Bonus: Spot acquired a suspicious toy.";
+          } else {
+            log.note += " Bonus: nothing happened. Which is suspicious.";
+          }
+
+          saveDayLog(dayIndex, log);
+          saveJSON(KEY_STATE, state);
+
+          pingEmoji(emojiEl, opt.emoji);
+          statusEl.textContent = opt.result;
+
+          render();
+        });
+        actionsEl.appendChild(b);
+      });
+
+      const backBtn = document.createElement("button");
+      backBtn.className = "danger";
+      backBtn.textContent = "Back";
+      backBtn.addEventListener("click", () => render());
+      actionsEl.appendChild(backBtn);
+    }
+
+    function renderFinale(state){
+      subtitleEl.textContent = "Session concluded.";
+      dayPillEl.textContent = `Finale`;
+      barEl.style.width = `99%`;
+
+      applyHouseTheme(state.homeLevel);
+      renderFriend(state);
+
+      pingEmoji(emojiEl, "🐶💀");
+      statusEl.textContent = "99% complete.";
+      moodEl.textContent = "You were so close. The system is unforgiving.";
+
+      panelSituationEl.textContent = "Outcome:";
+      panelHintEl.textContent = "No matter what you did… Spot remembers the one thing you didn’t.";
+
+      actionsEl.innerHTML = "";
+      const restartBtn = document.createElement("button");
+      restartBtn.className = "danger";
+      restartBtn.textContent = "Restart 7 days";
+      restartBtn.addEventListener("click", () => restartAll());
+      actionsEl.appendChild(restartBtn);
+
+      finaleEl.style.display = "block";
+      finaleEl.innerHTML = `
+        <div style="font-weight:900; font-size:14px; margin-bottom:8px;">
+          Final Report (Unavoidable)
+        </div>
+        <div>
+          <span style="color: var(--muted);">Failure to take Spot’s REAL owner on a date led to him</span>
+          <span style="font-weight:900;"> 😵</span>
+        </div>
+        <div class="muted">
+          This message was generated by Spot. Liability: unknown.
+        </div>
+      `;
+    }
+
+    function restartAll(){
+      for(let i=0;i<TOTAL_DAYS;i++){
+        localStorage.removeItem(KEY_DAYLOG(i));
+      }
+      localStorage.removeItem(KEY_STATE);
+      localStorage.removeItem(KEY_START);
+
+      initStartDate();
+      initState();
+      render();
+    }
+
+    // Boot
+    initStartDate();
+    initState();
+    render();
+  </script>
+</body>
+</html>
